@@ -18,80 +18,55 @@ const Chatbot: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = async () => {
-    if (message.trim()) {
-      // Add user message
-      const userMessage = {
-        id: Date.now().toString(),
-        text: message,
-        sender: 'user' as const,
-        timestamp: new Date()
-      };
-      addMessage(userMessage);
+const handleSendMessage = async () => {
+  if (message.trim()) {
+    // Add user message
+    const userMessage = {
+      id: Date.now().toString(),
+      text: message,
+      sender: 'user' as const,
+      timestamp: new Date()
+    };
+    addMessage(userMessage);
 
-      // Clear input
-      const currentMessage = message;
-      setMessage('');
+    // Clear input
+    const currentMessage = message;
+    setMessage('');
 
-      // Show typing indicator
-      setIsTyping(true);
-      
-      try {
-        // Call OpenAI API with proper headers
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2OGE4YmNkZDhiMmNlMmE4M2MwYjU1NGEiLCJ0eXBlIjoiYXV0aCIsImlhdCI6MTc1NzI2MTc0OH0.buKzILT_f-twtGhF-IP2lj_-PejVG5ChWG42Ga_mVXw`
-          },
-          body: JSON.stringify({
-            model: "gpt-3.5-turbo",
-            messages: [
-              {
-                role: "system",
-                content: `شما چت‌بات پیکستان هستید، مشاور تخصصی قطعات الکترونیکی. شما باید:
-                1. به زبان فارسی پاسخ دهید
-                2. در زمینه قطعات الکترونیکی تخصص داشته باشید
-                3. پاسخ‌های دقیق و کاربردی ارائه دهید
-                4. از ایموجی‌های مناسب استفاده کنید
-                5. اگر سوال خارج از حوزه الکترونیک باشد، کاربر را به موضوعات الکترونیکی هدایت کنید`
-              },
-              {
-                role: "user",
-                content: currentMessage
-              }
-            ],
-            max_tokens: 500,
-            temperature: 0.7
-          })
-        });
+    // Show typing indicator
+    setIsTyping(true);
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+    try {
+      // ارسال درخواست به سرور اصلی
+      const response = await fetch(`https://app.pikestan.ir/?prompt=${encodeURIComponent(currentMessage)}`);
 
-        const data = await response.json();
-        const botResponse = data.choices[0]?.message?.content || 'متاسفانه نتوانستم پاسخ مناسبی تولید کنم. لطفاً دوباره تلاش کنید.';
-        
-        setIsTyping(false);
-        addMessage({
-          id: (Date.now() + 1).toString(),
-          text: botResponse,
-          sender: 'bot',
-          timestamp: new Date()
-        });
-      } catch (error) {
-        setIsTyping(false);
-        console.error('OpenAI API Error:', error);
-        addMessage({
-          id: (Date.now() + 1).toString(),
-          text: `متاسفانه در حال حاضر مشکلی در ارتباط با سرور وجود دارد. لطفاً بعداً تلاش کنید. 🔧\n\nخطا: ${error instanceof Error ? error.message : 'نامشخص'}`,
-          sender: 'bot',
-          timestamp: new Date()
-        });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      const data = await response.json();
+      const botResponse = data.response || 'متاسفانه نتوانستم پاسخ مناسبی تولید کنم. لطفاً دوباره تلاش کنید.';
+
+      setIsTyping(false);
+      addMessage({
+        id: (Date.now() + 1).toString(),
+        text: botResponse,
+        sender: 'bot',
+        timestamp: new Date()
+      });
+    } catch (error) {
+      setIsTyping(false);
+      console.error('Server Error:', error);
+      addMessage({
+        id: (Date.now() + 1).toString(),
+        text: `متاسفانه در حال حاضر مشکلی در ارتباط با سرور وجود دارد. لطفاً بعداً تلاش کنید. 🔧\n\nخطا: ${error instanceof Error ? error.message : 'نامشخص'}`,
+        sender: 'bot',
+        timestamp: new Date()
+      });
     }
-  };
+  }
+};
+
 
   const quickActions = [
     { icon: Cpu, text: 'میکروکنترلرها', message: 'راجع به میکروکنترلرها و کاربردهایشان بگو', gradient: 'from-blue-500 to-cyan-500' },
