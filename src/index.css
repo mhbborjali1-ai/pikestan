@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap');
+
+* {
+  font-family: 'Vazirmatn', sans-serif;
+}
+
+body {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* RTL Support */
+.text-right {
+  text-align: right;
+}
+
+/* Animation improvements */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Responsive adjustments for RTL */
+@media (max-width: 768px) {
+  .space-x-reverse > :not([hidden]) ~ :not([hidden]) {
+    margin-right: 0.5rem;
+    margin-left: 0;
+  }
+}
+
+/* Custom gradient backgrounds */
+.bg-gradient-persian {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.bg-gradient-sunset {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+/* Enhanced focus states for better accessibility */
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+}
+
+/* Loading animation */
+.loading-dots {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  position: relative;
+}
+
+.loading-dots::before {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: currentColor;
+  border-radius: 50%;
+  animation: loading-dots 1.4s infinite ease-in-out both;
+}
+
+.loading-dots::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: currentColor;
+  border-radius: 50%;
+  left: 8px;
+  animation: loading-dots 1.4s infinite ease-in-out both;
+  animation-delay: 0.2s;
+}
+
+@keyframes loading-dots {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
