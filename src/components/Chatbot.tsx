@@ -1,12 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, Send, X, Mic, Image, Cpu, CircuitBoard, Zap, Sparkles, Bot, User, Copy, ThumbsUp, ThumbsDown, RotateCcw, Volume2 } from 'lucide-react';
 import { useChat } from '../contexts/ChatContext';
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  apiKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2OGE4YmNkZDhiMmNlMmE4M2MwYjU1NGEiLCJ0eXBlIjoiYXV0aCIsImlhdCI6MTc1NzI2MTc0OH0.buKzILT_f-twtGhF-IP2lj_-PejVG5ChWG42Ga_mVXw',
-  dangerouslyAllowBrowser: true
-});
 
 const Chatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -43,29 +37,41 @@ const Chatbot: React.FC = () => {
       setIsTyping(true);
       
       try {
-        // Call OpenAI API
-        const response = await openai.chat.completions.create({
-          model: "gpt-3.5-turbo",
-          messages: [
-            {
-              role: "system",
-              content: `شما چت‌بات پیکستان هستید، مشاور تخصصی قطعات الکترونیکی. شما باید:
-              1. به زبان فارسی پاسخ دهید
-              2. در زمینه قطعات الکترونیکی تخصص داشته باشید
-              3. پاسخ‌های دقیق و کاربردی ارائه دهید
-              4. از ایموجی‌های مناسب استفاده کنید
-              5. اگر سوال خارج از حوزه الکترونیک باشد، کاربر را به موضوعات الکترونیکی هدایت کنید`
-            },
-            {
-              role: "user",
-              content: currentMessage
-            }
-          ],
-          max_tokens: 500,
-          temperature: 0.7
+        // Call OpenAI API with proper headers
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2OGE4YmNkZDhiMmNlMmE4M2MwYjU1NGEiLCJ0eXBlIjoiYXV0aCIsImlhdCI6MTc1NzI2MTc0OH0.buKzILT_f-twtGhF-IP2lj_-PejVG5ChWG42Ga_mVXw`
+          },
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: [
+              {
+                role: "system",
+                content: `شما چت‌بات پیکستان هستید، مشاور تخصصی قطعات الکترونیکی. شما باید:
+                1. به زبان فارسی پاسخ دهید
+                2. در زمینه قطعات الکترونیکی تخصص داشته باشید
+                3. پاسخ‌های دقیق و کاربردی ارائه دهید
+                4. از ایموجی‌های مناسب استفاده کنید
+                5. اگر سوال خارج از حوزه الکترونیک باشد، کاربر را به موضوعات الکترونیکی هدایت کنید`
+              },
+              {
+                role: "user",
+                content: currentMessage
+              }
+            ],
+            max_tokens: 500,
+            temperature: 0.7
+          })
         });
 
-        const botResponse = response.choices[0]?.message?.content || 'متاسفانه نتوانستم پاسخ مناسبی تولید کنم. لطفاً دوباره تلاش کنید.';
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const botResponse = data.choices[0]?.message?.content || 'متاسفانه نتوانستم پاسخ مناسبی تولید کنم. لطفاً دوباره تلاش کنید.';
         
         setIsTyping(false);
         addMessage({
@@ -76,9 +82,10 @@ const Chatbot: React.FC = () => {
         });
       } catch (error) {
         setIsTyping(false);
+        console.error('OpenAI API Error:', error);
         addMessage({
           id: (Date.now() + 1).toString(),
-          text: 'متاسفانه در حال حاضر مشکلی در ارتباط وجود دارد. لطفاً بعداً تلاش کنید. 🔧',
+          text: `متاسفانه در حال حاضر مشکلی در ارتباط با سرور وجود دارد. لطفاً بعداً تلاش کنید. 🔧\n\nخطا: ${error instanceof Error ? error.message : 'نامشخص'}`,
           sender: 'bot',
           timestamp: new Date()
         });
