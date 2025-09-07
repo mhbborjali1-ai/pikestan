@@ -32,9 +32,11 @@ const Hero: React.FC = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12">
-              <button className="bg-blue-500 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                شروع گفتگو با چت‌بات
+<a href="https://chatbot.pikestan.ir/">
+              <button className="bg-white text-blue-500 px-8 py-4 rounded-lg text-lg font-medium hover:bg-gray-100 transition-colors shadow-lg">
+                شروع گفتگو
               </button>
+</a>
               <button className="bg-white text-blue-500 px-8 py-4 rounded-lg text-lg font-medium hover:bg-gray-50 transition-colors border-2 border-blue-500">
                 مشاهده نمونه مشاوره
               </button>
@@ -89,7 +91,7 @@ const Hero: React.FC = () => {
                   <div className="bg-white rounded-lg p-3 border border-gray-200">
                     <div className="flex items-center">
                       <img
-                        src="https://images.pexels.com/photos/163100/circuit-circuit-board-resistor-computer-163100.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop"
+                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVmwm6wzANk11w3hbRkOmhUzdmfTkQhuxsXw&s"
                         alt="ترانزیستور"
                         className="w-12 h-12 rounded object-cover ml-3"
                       />

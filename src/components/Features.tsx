@@ -7,42 +7,42 @@ const features = [
     title: 'هوش مصنوعی پیشرفته',
     description: 'تشخیص دقیق نیازهای شما و پیشنهاد بهترین قطعات الکترونیکی',
     color: 'bg-blue-500',
-    image: 'https://images.pexels.com/photos/373543/pexels-photo-373543.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'
+    image: 'https://png.pngtree.com/thumb_back/fh260/background/20250423/pngtree-futuristic-ai-technology-source-and-related-content-image_17208471.jpg'
   },
   {
     icon: MessageCircle,
     title: 'گفتگوی تخصصی',
     description: 'چت‌بات با دانش عمیق در زمینه الکترونیک و قطعات',
     color: 'bg-green-500',
-    image: 'https://images.pexels.com/photos/163100/circuit-circuit-board-resistor-computer-163100.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'
+    image: 'https://up.pikestan.ir/1.jpg'
   },
   {
     icon: Search,
     title: 'جستجوی هوشمند',
     description: 'پیدا کردن قطعات مناسب بر اساس مشخصات فنی پروژه',
     color: 'bg-purple-500',
-    image: 'https://images.pexels.com/photos/442150/pexels-photo-442150.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'
+    image: 'https://thumbs.dreamstime.com/b/woman-wearing-virtual-reality-headset-engaged-ai-search-futuristic-interface-showing-artificial-intelligence-concepts-398984296.jpg'
   },
   {
     icon: TrendingUp,
     title: 'تحلیل پروژه',
     description: 'بررسی نیازهای پروژه و ارائه راهکارهای بهینه',
     color: 'bg-orange-500',
-    image: 'https://images.pexels.com/photos/159201/circuit-board-circuit-computer-159201.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'
+    image: 'https://mapsun.net/wp-content/uploads/2021/05/4-4.jpg'
   },
   {
     icon: Shield,
     title: 'مشاوره مطمئن',
     description: 'اطلاعات دقیق و قابل اعتماد از منابع معتبر',
     color: 'bg-red-500',
-    image: 'https://images.pexels.com/photos/325229/pexels-photo-325229.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'
+    image: 'https://www.danodonnell.net/wp-content/uploads/ai-consulting.jpg'
   },
   {
     icon: Clock,
     title: 'پاسخگویی سریع',
     description: 'دریافت پاسخ فوری و دقیق در هر ساعت از شبانه‌روز',
     color: 'bg-indigo-500',
-    image: 'https://images.pexels.com/photos/2582937/pexels-photo-2582937.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'
+    image: 'https://www.okoone.com/wp-content/uploads/2025/08/Marketing-Growth-430.jpg'
   }
 ];
 
@@ -121,9 +121,11 @@ const Features: React.FC = () => {
               <p className="text-lg mb-8 opacity-90">
                 همین الان با چت‌بات پیکستان گفتگو کنید و بهترین قطعات را برای پروژه‌تان پیدا کنید
               </p>
+<a href="https://chatbot.pikestan.ir/">
               <button className="bg-white text-blue-500 px-8 py-4 rounded-lg text-lg font-medium hover:bg-gray-100 transition-colors shadow-lg">
                 شروع گفتگو
               </button>
+</a>
             </div>
           </div>
         </div>

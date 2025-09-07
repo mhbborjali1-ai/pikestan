@@ -50,7 +50,7 @@ const About: React.FC = () => {
         <div className="mb-16">
           <div className="relative rounded-2xl overflow-hidden shadow-2xl">
             <img 
-              src="https://images.pexels.com/photos/373543/pexels-photo-373543.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop"
+              src="https://barghisho.com/wp-content/uploads/2023/04/what-is-electronic-01-min.jpg"
               alt="الکترونیک و تکنولوژی"
               className="w-full h-96 object-cover"
             />
@@ -89,7 +89,7 @@ const About: React.FC = () => {
           </div>
           <div className="relative">
             <img 
-              src="https://images.pexels.com/photos/163100/circuit-circuit-board-resistor-computer-163100.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop"
+              src="https://noabargh.ir/img/upload/posts/%D8%B9%D9%84%D9%85-%D8%A7%D9%84%DA%A9%D8%AA%D8%B1%D9%88%D9%86%DB%8C%DA%A9-%D9%88-%DA%A9%D8%A7%D8%B1%D8%A8%D8%B1%D8%AF%D9%87%D8%A7%DB%8C-%D8%A2%D9%86.jpg"
               alt="برد مداری"
               className="rounded-2xl shadow-lg"
             />
@@ -153,7 +153,7 @@ const About: React.FC = () => {
             </div>
             <div className="relative">
               <img 
-                src="https://images.pexels.com/photos/442150/pexels-photo-442150.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop"
+                src="https://tejaratnews.com/wp-content/uploads/2022/12/Virtual-Reality1-e1672488493513.webp"
                 alt="تکنولوژی"
                 className="rounded-2xl shadow-lg"
               />
@@ -171,9 +171,11 @@ const About: React.FC = () => {
             <p className="text-lg mb-8 opacity-90">
               همین الان شروع کنید و تجربه مشاوره هوشمند را داشته باشید
             </p>
-            <button className="bg-white text-blue-500 px-8 py-4 rounded-lg text-lg font-medium hover:bg-gray-100 transition-colors shadow-lg">
-              شروع گفتگو با چت‌بات
-            </button>
+<a href="https://chatbot.pikestan.ir/">
+              <button className="bg-white text-blue-500 px-8 py-4 rounded-lg text-lg font-medium hover:bg-gray-100 transition-colors shadow-lg">
+                شروع گفتگو
+              </button>
+</a>
           </div>
         </div>
       </div>

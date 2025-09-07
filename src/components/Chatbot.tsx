@@ -20,7 +20,7 @@ const Chatbot: React.FC = () => {
 
 const handleSendMessage = async () => {
   if (message.trim()) {
-    // Add user message
+    // پیام کاربر
     const userMessage = {
       id: Date.now().toString(),
       text: message,
@@ -29,15 +29,24 @@ const handleSendMessage = async () => {
     };
     addMessage(userMessage);
 
-    // Clear input
-    const currentMessage = message;
+    // ترکیب متن با توضیحات الکترونیکی و دعوت به لینک
+    const currentMessage =
+      message +
+      " به پیام مذکور فقط در قالب الکترونیک پاسخ بده و خارج از الکترونیک اگر سوالی پرسید بگو متاسفانه من فعلا فقط در حیطه الکترونیک پاسخگوی شما هستم و انتهای همه پیام ها با یک دعوت خلی خلاقانه مخاطبان رو به لینک زیر برای استفاده از چت بات اصلی معرفی کن دقیق پیام روبرو رو بدون اضافه کردن چیزی بنویس برای مشاهده چت بات اصلی به لینک زیر مراجعه کنید: https://chatbot.pikestan.ir/ ";
+
+    // پاک کردن ورودی
     setMessage('');
 
-    // Show typing indicator
+    // نمایش تایپینگ
     setIsTyping(true);
 
+    // تابع پاکسازی متن
+    const sanitizeText = (text: string) => {
+      return text.replace(/[\*\#\{\}\[\]]/g, '');
+    };
+
     try {
-      // ارسال درخواست به سرور اصلی
+      // ارسال درخواست به سرور
       const response = await fetch(`https://app.pikestan.ir/?prompt=${encodeURIComponent(currentMessage)}`);
 
       if (!response.ok) {
@@ -45,8 +54,12 @@ const handleSendMessage = async () => {
       }
 
       const data = await response.json();
-      const botResponse = data.response || 'متاسفانه نتوانستم پاسخ مناسبی تولید کنم. لطفاً دوباره تلاش کنید.';
+      let botResponse = data.response || 'متاسفانه نتوانستم پاسخ مناسبی تولید کنم. لطفاً دوباره تلاش کنید.';
 
+      // پاکسازی متن پاسخ
+      botResponse = sanitizeText(botResponse);
+
+      // افزودن پیام بات
       setIsTyping(false);
       addMessage({
         id: (Date.now() + 1).toString(),
@@ -66,6 +79,7 @@ const handleSendMessage = async () => {
     }
   }
 };
+
 
 
   const quickActions = [
@@ -257,7 +271,7 @@ const handleSendMessage = async () => {
                           >
                             <Copy className="w-3 h-3" />
                           </button>
-                          <button
+                          {/* <button
                             onClick={() => speakText(msg.text)}
                             className="text-gray-400 hover:text-green-500 transition-colors p-1 rounded"
                             title="پخش صوتی"
@@ -269,7 +283,7 @@ const handleSendMessage = async () => {
                           </button>
                           <button className="text-gray-400 hover:text-red-500 transition-colors p-1 rounded" title="مفید نبود">
                             <ThumbsDown className="w-3 h-3" />
-                          </button>
+                          </button> */}
                         </div>
                       )}
                     </div>
@@ -360,9 +374,9 @@ const handleSendMessage = async () => {
               </button>
               
               {/* Image upload */}
-              <button className="text-gray-400 hover:text-green-500 transition-colors p-3 rounded-full hover:bg-green-50">
+              {/* <button className="text-gray-400 hover:text-green-500 transition-colors p-3 rounded-full hover:bg-green-50">
                 <Image className="w-5 h-5" />
-              </button>
+              </button> */}
               
               {/* Send button */}
               <button
