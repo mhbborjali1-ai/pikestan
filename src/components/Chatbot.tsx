@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, Send, X, Mic, Image, Cpu, CircuitBoard, Zap, Sparkles, Bot, User, Copy, ThumbsUp, ThumbsDown, RotateCcw, Volume2 } from 'lucide-react';
+import { MessageCircle, Send, X, Mic, Image, Cpu, CircuitBoard, Zap, Sparkles, Bot, User, Copy, ThumbsUp, ThumbsDown, RotateCcw, Volume2, Code, ExternalLink, Download, Share2, Bookmark, Eye, EyeOff, Hash, Type, Link2, FileText, Palette } from 'lucide-react';
 import { useChat } from '../contexts/ChatContext';
 
 const Chatbot: React.FC = () => {
@@ -7,6 +7,8 @@ const Chatbot: React.FC = () => {
   const [message, setMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [showMarkdown, setShowMarkdown] = useState<{[key: string]: boolean}>({});
+  const [bookmarkedMessages, setBookmarkedMessages] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { messages, addMessage } = useChat();
 
@@ -80,8 +82,6 @@ const handleSendMessage = async () => {
   }
 };
 
-
-
   const quickActions = [
     { icon: Cpu, text: 'میکروکنترلرها', message: 'راجع به میکروکنترلرها و کاربردهایشان بگو', gradient: 'from-blue-500 to-cyan-500' },
     { icon: CircuitBoard, text: 'آی‌سی‌ها', message: 'انواع آی سی و کاربردهایشان را معرفی کن', gradient: 'from-green-500 to-emerald-500' },
@@ -96,6 +96,81 @@ const handleSendMessage = async () => {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
+  };
+
+  const downloadMessage = (text: string, messageId: string) => {
+    const element = document.createElement('a');
+    const file = new Blob([text], { type: 'text/plain' });
+    element.href = URL.createObjectURL(file);
+    element.download = `message-${messageId}.txt`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
+
+  const shareMessage = async (text: string) => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'پیام از چت‌بات پیکستان',
+          text: text,
+        });
+      } catch (error) {
+        copyToClipboard(text);
+      }
+    } else {
+      copyToClipboard(text);
+    }
+  };
+
+  const toggleBookmark = (messageId: string) => {
+    setBookmarkedMessages(prev => 
+      prev.includes(messageId) 
+        ? prev.filter(id => id !== messageId)
+        : [...prev, messageId]
+    );
+  };
+
+  const toggleMarkdown = (messageId: string) => {
+    setShowMarkdown(prev => ({
+      ...prev,
+      [messageId]: !prev[messageId]
+    }));
+  };
+
+  const formatMessageWithMarkdown = (text: string) => {
+    // تبدیل لینک‌ها به دکمه
+    const linkRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = text.split(linkRegex);
+    
+    return parts.map((part, index) => {
+      if (part.match(linkRegex)) {
+        return (
+          <a
+            key={index}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600 transition-colors mx-1 my-1"
+          >
+            <ExternalLink className="w-3 h-3 ml-1" />
+            {part.includes('chatbot.pikestan.ir') ? 'چت‌بات اصلی پیکستان' : 'لینک'}
+          </a>
+        );
+      }
+      
+      // تبدیل سایر عناصر markdown
+      let formattedText = part
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`(.*?)`/g, '<code class="bg-gray-100 px-1 rounded text-sm">$1</code>')
+        .replace(/^### (.*$)/gm, '<h3 class="text-lg font-bold mt-4 mb-2">$1</h3>')
+        .replace(/^## (.*$)/gm, '<h2 class="text-xl font-bold mt-4 mb-2">$1</h2>')
+        .replace(/^# (.*$)/gm, '<h1 class="text-2xl font-bold mt-4 mb-2">$1</h1>')
+        .replace(/^\- (.*$)/gm, '<li class="ml-4">• $1</li>');
+      
+      return <span key={index} dangerouslySetInnerHTML={{ __html: formattedText }} />;
+    });
   };
 
   const speakText = (text: string) => {
@@ -243,6 +318,9 @@ const handleSendMessage = async () => {
                     } shadow-lg`}>
                       {msg.sender === 'user' ? <User className="w-4 h-4 text-white" /> : <Bot className="w-4 h-4 text-white" />}
                     </div>
+                    {bookmarkedMessages.includes(msg.id) && (
+                      <Bookmark className="w-4 h-4 text-yellow-500 mr-2" />
+                    )}
                   </div>
                   
                   {/* Message bubble */}
@@ -253,7 +331,16 @@ const handleSendMessage = async () => {
                         : 'bg-white text-gray-800 rounded-bl-sm border border-gray-100'
                     }`}
                   >
-                    <p className="text-sm leading-relaxed whitespace-pre-line">{msg.text}</p>
+                    <div className="text-sm leading-relaxed">
+                      {showMarkdown[msg.id] ? (
+                        <div className="whitespace-pre-line">
+                          {formatMessageWithMarkdown(msg.text)}
+                        </div>
+                      ) : (
+                        <p className="whitespace-pre-line">{msg.text}</p>
+                      )}
+                    </div>
+                    
                     <div className="flex items-center justify-between mt-3">
                       <p className={`text-xs opacity-70 ${
                         msg.sender === 'user' ? 'text-blue-100' : 'text-gray-500'
@@ -261,9 +348,16 @@ const handleSendMessage = async () => {
                         {formatTime(msg.timestamp)}
                       </p>
                       
-                      {/* Message actions */}
+                      {/* Enhanced Message actions */}
                       {msg.sender === 'bot' && (
-                        <div className="flex items-center space-x-reverse space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center space-x-reverse space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={() => toggleMarkdown(msg.id)}
+                            className="text-gray-400 hover:text-purple-500 transition-colors p-1 rounded"
+                            title={showMarkdown[msg.id] ? 'حالت عادی' : 'نمایش با فرمت'}
+                          >
+                            {showMarkdown[msg.id] ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                          </button>
                           <button
                             onClick={() => copyToClipboard(msg.text)}
                             className="text-gray-400 hover:text-blue-500 transition-colors p-1 rounded"
@@ -271,19 +365,31 @@ const handleSendMessage = async () => {
                           >
                             <Copy className="w-3 h-3" />
                           </button>
-                          {/* <button
-                            onClick={() => speakText(msg.text)}
+                          <button
+                            onClick={() => downloadMessage(msg.text, msg.id)}
                             className="text-gray-400 hover:text-green-500 transition-colors p-1 rounded"
-                            title="پخش صوتی"
+                            title="دانلود"
                           >
-                            <Volume2 className="w-3 h-3" />
+                            <Download className="w-3 h-3" />
                           </button>
-                          <button className="text-gray-400 hover:text-green-500 transition-colors p-1 rounded" title="مفید بود">
-                            <ThumbsUp className="w-3 h-3" />
+                          <button
+                            onClick={() => shareMessage(msg.text)}
+                            className="text-gray-400 hover:text-orange-500 transition-colors p-1 rounded"
+                            title="اشتراک‌گذاری"
+                          >
+                            <Share2 className="w-3 h-3" />
                           </button>
-                          <button className="text-gray-400 hover:text-red-500 transition-colors p-1 rounded" title="مفید نبود">
-                            <ThumbsDown className="w-3 h-3" />
-                          </button> */}
+                          <button
+                            onClick={() => toggleBookmark(msg.id)}
+                            className={`transition-colors p-1 rounded ${
+                              bookmarkedMessages.includes(msg.id) 
+                                ? 'text-yellow-500' 
+                                : 'text-gray-400 hover:text-yellow-500'
+                            }`}
+                            title="نشانه‌گذاری"
+                          >
+                            <Bookmark className="w-3 h-3" />
+                          </button>
                         </div>
                       )}
                     </div>
@@ -372,11 +478,6 @@ const handleSendMessage = async () => {
               >
                 <Mic className="w-5 h-5" />
               </button>
-              
-              {/* Image upload */}
-              {/* <button className="text-gray-400 hover:text-green-500 transition-colors p-3 rounded-full hover:bg-green-50">
-                <Image className="w-5 h-5" />
-              </button> */}
               
               {/* Send button */}
               <button

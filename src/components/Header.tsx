@@ -50,6 +50,14 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
               درباره ما
             </button>
             <button
+              onClick={() => onNavigate('tools')}
+              className={`text-gray-700 hover:text-blue-500 transition-colors ${
+                currentPage === 'tools' ? 'text-blue-500 font-medium' : ''
+              }`}
+            >
+              ابزارها
+            </button>
+            <button
               onClick={() => onNavigate('contact')}
               className={`text-gray-700 hover:text-blue-500 transition-colors ${
                 currentPage === 'contact' ? 'text-blue-500 font-medium' : ''
@@ -98,6 +106,15 @@ const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
                 className="text-right px-4 py-2 text-gray-700 hover:text-blue-500 transition-colors"
               >
                 درباره ما
+              </button>
+              <button
+                onClick={() => {
+                  onNavigate('tools');
+                  setIsMenuOpen(false);
+                }}
+                className="text-right px-4 py-2 text-gray-700 hover:text-blue-500 transition-colors"
+              >
+                ابزارها
               </button>
               <button
                 onClick={() => {

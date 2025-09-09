@@ -4,11 +4,12 @@ import Hero from './components/Hero';
 import Features from './components/Features';
 import Services from './components/Services';
 import About from './components/About';
+import Tools from './components/Tools';
 import Chatbot from './components/Chatbot';
 import Footer from './components/Footer';
 import { ChatProvider } from './contexts/ChatContext';
 
-export type Page = 'home' | 'services' | 'about' | 'contact';
+export type Page = 'home' | 'services' | 'about' | 'tools' | 'contact';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -21,12 +22,15 @@ function App() {
             <Hero />
             <Features />
             <Services />
+            <Tools />
           </>
         );
       case 'services':
         return <Services />;
       case 'about':
         return <About />;
+      case 'tools':
+        return <Tools />;
       case 'contact':
         return (
           <div className="min-h-screen bg-gray-50 py-16">
