@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Database, Cpu, CircuitBoard, Zap, Battery, Filter, Star, ExternalLink } from 'lucide-react';
+import { Search, Database, Cpu, CircuitBoard, Zap, Battery, Filter, Star, ExternalLink, ArrowRight, ShoppingCart, Heart, Share2 } from 'lucide-react';
 
 interface Component {
   id: string;
@@ -15,10 +15,209 @@ interface Component {
   datasheet?: string;
 }
 
+interface ComponentDetailProps {
+  component: Component;
+  onBack: () => void;
+}
+
+const ComponentDetail: React.FC<ComponentDetailProps> = ({ component, onBack }) => {
+  const [activeTab, setActiveTab] = useState<'overview' | 'specs' | 'applications' | 'reviews'>('overview');
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  const tabs = [
+    { id: 'overview', label: 'نمای کلی' },
+    { id: 'specs', label: 'مشخصات فنی' },
+    { id: 'applications', label: 'کاربردها' },
+    { id: 'reviews', label: 'نظرات' }
+  ];
+
+  const reviews = [
+    { id: 1, user: 'احمد محمدی', rating: 5, comment: 'کیفیت عالی و قیمت مناسب', date: '۱۴۰۳/۰۸/۱۵' },
+    { id: 2, user: 'فاطمه احمدی', rating: 4, comment: 'برای پروژه‌های آموزشی مناسب است', date: '۱۴۰۳/۰۸/۱۰' },
+    { id: 3, user: 'علی رضایی', rating: 5, comment: 'سریع و قابل اعتماد', date: '۱۴۰۳/۰۸/۰۵' }
+  ];
+
+  return (
+    <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white p-6">
+        <button
+          onClick={onBack}
+          className="flex items-center text-white hover:text-blue-100 transition-colors mb-4"
+        >
+          <ArrowRight className="w-5 h-5 ml-2" />
+          بازگشت به لیست
+        </button>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">{component.name}</h1>
+            <p className="text-blue-100 text-lg">{component.description}</p>
+          </div>
+          <div className="flex items-center space-x-reverse space-x-3">
+            <button
+              onClick={() => setIsFavorite(!isFavorite)}
+              className={`p-3 rounded-full transition-colors ${
+                isFavorite ? 'bg-red-500 text-white' : 'bg-white bg-opacity-20 text-white hover:bg-opacity-30'
+              }`}
+            >
+              <Heart className="w-6 h-6" />
+            </button>
+            <button className="p-3 bg-white bg-opacity-20 text-white hover:bg-opacity-30 rounded-full transition-colors">
+              <Share2 className="w-6 h-6" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-8 p-6">
+        {/* Image and Quick Info */}
+        <div className="lg:col-span-1">
+          <img
+            src={component.image}
+            alt={component.name}
+            className="w-full h-64 object-cover rounded-lg mb-6"
+          />
+          
+          <div className="bg-gray-50 rounded-lg p-4 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-2xl font-bold text-green-600">{component.price}</span>
+              <div className="flex items-center">
+                <Star className="w-5 h-5 text-yellow-500 ml-1" />
+                <span className="font-medium">{component.rating}</span>
+              </div>
+            </div>
+            
+            <div className={`inline-block px-3 py-1 rounded-full text-sm font-medium mb-4 ${
+              component.availability === 'available' ? 'bg-green-100 text-green-600' :
+              component.availability === 'limited' ? 'bg-yellow-100 text-yellow-600' :
+              'bg-red-100 text-red-600'
+            }`}>
+              {component.availability === 'available' ? 'موجود' :
+               component.availability === 'limited' ? 'محدود' : 'ناموجود'}
+            </div>
+            
+            <button className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center">
+              <ShoppingCart className="w-5 h-5 ml-2" />
+              افزودن به سبد خرید
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="lg:col-span-2">
+          {/* Tabs */}
+          <div className="flex border-b border-gray-200 mb-6">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`px-6 py-3 font-medium transition-colors ${
+                  activeTab === tab.id
+                    ? 'text-blue-500 border-b-2 border-blue-500'
+                    : 'text-gray-600 hover:text-blue-500'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Tab Content */}
+          {activeTab === 'overview' && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-xl font-bold text-gray-800 mb-3">توضیحات</h3>
+                <p className="text-gray-600 leading-relaxed">{component.description}</p>
+              </div>
+              
+              <div>
+                <h3 className="text-xl font-bold text-gray-800 mb-3">ویژگی‌های کلیدی</h3>
+                <ul className="space-y-2">
+                  {component.specifications.map((spec, index) => (
+                    <li key={index} className="flex items-center text-gray-600">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full ml-3"></div>
+                      {spec}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'specs' && (
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-gray-800 mb-4">مشخصات فنی کامل</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {component.specifications.map((spec, index) => (
+                  <div key={index} className="bg-gray-50 p-4 rounded-lg">
+                    <div className="font-medium text-gray-800">{spec}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'applications' && (
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-gray-800 mb-4">کاربردهای عملی</h3>
+              <div className="grid gap-4">
+                {component.applications.map((app, index) => (
+                  <div key={index} className="bg-blue-50 p-4 rounded-lg border-r-4 border-blue-500">
+                    <div className="font-medium text-gray-800">{app}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'reviews' && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-gray-800">نظرات کاربران</h3>
+                <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                  ثبت نظر
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                {reviews.map((review) => (
+                  <div key={review.id} className="bg-gray-50 p-4 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium ml-3">
+                          {review.user.charAt(0)}
+                        </div>
+                        <span className="font-medium text-gray-800">{review.user}</span>
+                      </div>
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`w-4 h-4 ${
+                              i < review.rating ? 'text-yellow-500 fill-current' : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                        <span className="text-sm text-gray-500 mr-2">{review.date}</span>
+                      </div>
+                    </div>
+                    <p className="text-gray-600">{review.comment}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ComponentDatabase: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'name' | 'price' | 'rating'>('name');
+  const [selectedComponent, setSelectedComponent] = useState<Component | null>(null);
 
   const components: Component[] = [
     {
@@ -80,6 +279,186 @@ const ComponentDatabase: React.FC = () => {
       availability: 'available',
       rating: 4.3,
       image: 'https://images.pexels.com/photos/163100/circuit-circuit-board-resistor-computer-163100.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop'
+    },
+    {
+      id: '6',
+      name: 'STM32F103C8T6',
+      type: 'microcontroller',
+      description: 'میکروکنترلر ARM Cortex-M3 با کارایی بالا',
+      specifications: ['ARM Cortex-M3', '72MHz', '64KB Flash', '20KB RAM', '37 GPIO'],
+      applications: ['پروژه‌های پیشرفته', 'کنترل موتور', 'پردازش سیگنال'],
+      price: '۱۲۰,۰۰۰ تومان',
+      availability: 'available',
+      rating: 4.7,
+      image: 'https://images.pexels.com/photos/442150/pexels-photo-442150.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop'
+    },
+    {
+      id: '7',
+      name: 'Raspberry Pi 4',
+      type: 'microcontroller',
+      description: 'کامپیوتر تک برد با قابلیت‌های بالا',
+      specifications: ['Quad-core ARM', '1.5GHz', '4GB RAM', 'WiFi', 'Bluetooth', '40 GPIO'],
+      applications: ['پروژه‌های IoT', 'سرور کوچک', 'یادگیری ماشین'],
+      price: '۸۵۰,۰۰۰ تومان',
+      availability: 'limited',
+      rating: 4.9,
+      image: 'https://images.pexels.com/photos/159201/circuit-board-circuit-computer-159201.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop'
+    },
+    {
+      id: '8',
+      name: 'LM7805',
+      type: 'ic',
+      description: 'رگولاتور ولتاژ ۵ ولت',
+      specifications: ['5V Output', '1A Current', 'TO-220 Package', 'Low Dropout'],
+      applications: ['تنظیم ولتاژ', 'منبع تغذیه', 'مدارات دیجیتال'],
+      price: '۸,۰۰۰ تومان',
+      availability: 'available',
+      rating: 4.4,
+      image: 'https://images.pexels.com/photos/325229/pexels-photo-325229.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop'
+    },
+    {
+      id: '9',
+      name: '555 Timer IC',
+      type: 'ic',
+      description: 'آی‌سی تایمر چندمنظوره',
+      specifications: ['8-pin DIP', '4.5-16V', 'Astable/Monostable', 'High Current Output'],
+      applications: ['مولد پالس', 'تایمر', 'اسیلاتور'],
+      price: '۵,۰۰۰ تومان',
+      availability: 'available',
+      rating: 4.6,
+      image: 'https://images.pexels.com/photos/163100/circuit-circuit-board-resistor-computer-163100.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop'
+    },
+    {
+      id: '10',
+      name: 'L298N Motor Driver',
+      type: 'ic',
+      description: 'درایور موتور دوگانه',
+      specifications: ['Dual H-Bridge', '2A per channel', '5-35V', 'Logic Level Compatible'],
+      applications: ['کنترل موتور DC', 'ربات‌ها', 'پروژه‌های حرکتی'],
+      price: '۴۵,۰۰۰ تومان',
+      availability: 'available',
+      rating: 4.8,
+      image: 'https://images.pexels.com/photos/442150/pexels-photo-442150.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop'
+    },
+    {
+      id: '11',
+      name: 'IRF540N MOSFET',
+      type: 'transistor',
+      description: 'ترانزیستور MOSFET قدرت بالا',
+      specifications: ['N-Channel', '100V', '33A', 'TO-220 Package', 'Low RDS(on)'],
+      applications: ['سوئیچینگ قدرت', 'کنترل موتور', 'اینورتر'],
+      price: '۱۲,۰۰۰ تومان',
+      availability: 'available',
+      rating: 4.7,
+      image: 'https://images.pexels.com/photos/159201/circuit-board-circuit-computer-159201.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop'
+    },
+    {
+      id: '12',
+      name: '2N2222 NPN',
+      type: 'transistor',
+      description: 'ترانزیستور NPN عمومی',
+      specifications: ['NPN', '40V', '800mA', 'TO-92 Package', 'High Gain'],
+      applications: ['تقویت سیگنال', 'سوئیچینگ', 'مدارات آنالوگ'],
+      price: '۲,۵۰۰ تومان',
+      availability: 'available',
+      rating: 4.3,
+      image: 'https://images.pexels.com/photos/325229/pexels-photo-325229.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop'
+    },
+    {
+      id: '13',
+      name: 'TIP120 Darlington',
+      type: 'transistor',
+      description: 'ترانزیستور دارلینگتون NPN',
+      specifications: ['NPN Darlington', '60V', '5A', 'High Gain', 'TO-220 Package'],
+      applications: ['درایور رله', 'کنترل بار سنگین', 'تقویت جریان'],
+      price: '۱۸,۰۰۰ تومان',
+      availability: 'available',
+      rating: 4.5,
+      image: 'https://images.pexels.com/photos/163100/circuit-circuit-board-resistor-computer-163100.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop'
+    },
+    {
+      id: '14',
+      name: 'خازن الکترولیتی ۱۰۰۰μF',
+      type: 'passive',
+      description: 'خازن الکترولیتی ۲۵ ولت',
+      specifications: ['1000μF', '25V', 'Electrolytic', 'Radial Lead', '±20%'],
+      applications: ['فیلتر منبع تغذیه', 'کوپلینگ', 'تایمینگ'],
+      price: '۳,۰۰۰ تومان',
+      availability: 'available',
+      rating: 4.2,
+      image: 'https://images.pexels.com/photos/442150/pexels-photo-442150.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop'
+    },
+    {
+      id: '15',
+      name: 'خازن سرامیکی ۱۰۰nF',
+      type: 'passive',
+      description: 'خازن سرامیکی ۵۰ ولت',
+      specifications: ['100nF', '50V', 'Ceramic', 'X7R', '±10%'],
+      applications: ['دکوپلینگ', 'فیلتر نویز', 'مدارات دیجیتال'],
+      price: '۱,۰۰۰ تومان',
+      availability: 'available',
+      rating: 4.1,
+      image: 'https://images.pexels.com/photos/159201/circuit-board-circuit-computer-159201.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop'
+    },
+    {
+      id: '16',
+      name: 'سلف ۱۰mH',
+      type: 'passive',
+      description: 'سلف ۱۰ میلی‌هنری',
+      specifications: ['10mH', '1A', 'Axial Lead', 'Iron Core', '±10%'],
+      applications: ['فیلتر EMI', 'مدارات تنظیم', 'اسیلاتور'],
+      price: '۴,۵۰۰ تومان',
+      availability: 'available',
+      rating: 4.0,
+      image: 'https://images.pexels.com/photos/325229/pexels-photo-325229.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop'
+    },
+    {
+      id: '17',
+      name: 'مقاومت ۱۰KΩ',
+      type: 'passive',
+      description: 'مقاومت کربنی ۱/۴ وات',
+      specifications: ['10KΩ', '1/4W', '±5%', 'Carbon Film', 'Axial Lead'],
+      applications: ['Pull-up/Pull-down', 'تقسیم ولتاژ', 'محدود کردن جریان'],
+      price: '۵۰۰ تومان',
+      availability: 'available',
+      rating: 4.2,
+      image: 'https://images.pexels.com/photos/163100/circuit-circuit-board-resistor-computer-163100.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop'
+    },
+    {
+      id: '18',
+      name: 'پتانسیومتر ۱۰KΩ',
+      type: 'passive',
+      description: 'پتانسیومتر خطی ۱۰ کیلواهم',
+      specifications: ['10KΩ', 'Linear Taper', 'Single Turn', '0.5W', 'PCB Mount'],
+      applications: ['کنترل ولتاژ', 'تنظیم حساسیت', 'کنترل صدا'],
+      price: '۸,۰۰۰ تومان',
+      availability: 'available',
+      rating: 4.4,
+      image: 'https://images.pexels.com/photos/442150/pexels-photo-442150.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop'
+    },
+    {
+      id: '19',
+      name: 'کریستال ۱۶MHz',
+      type: 'passive',
+      description: 'کریستال کوارتز ۱۶ مگاهرتز',
+      specifications: ['16MHz', 'HC-49S Package', '±20ppm', 'Low Profile', 'Through Hole'],
+      applications: ['کلاک میکروکنترلر', 'مدارات دیجیتال', 'تایمینگ دقیق'],
+      price: '۶,۰۰۰ تومان',
+      availability: 'available',
+      rating: 4.6,
+      image: 'https://images.pexels.com/photos/159201/circuit-board-circuit-computer-159201.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop'
+    },
+    {
+      id: '20',
+      name: 'LED قرمز ۵mm',
+      type: 'passive',
+      description: 'LED قرمز ۵ میلی‌متری',
+      specifications: ['Red LED', '5mm', '2V Forward', '20mA', 'High Brightness'],
+      applications: ['نشانگر وضعیت', 'نمایشگر', 'روشنایی'],
+      price: '۱,۵۰۰ تومان',
+      availability: 'available',
+      rating: 4.3,
+      image: 'https://images.pexels.com/photos/325229/pexels-photo-325229.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop'
     }
   ];
 
@@ -137,6 +516,10 @@ const ComponentDatabase: React.FC = () => {
       default: return 'نامشخص';
     }
   };
+
+  if (selectedComponent) {
+    return <ComponentDetail component={selectedComponent} onBack={() => setSelectedComponent(null)} />;
+  }
 
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6">
@@ -248,7 +631,10 @@ const ComponentDatabase: React.FC = () => {
                       <ExternalLink className="w-4 h-4" />
                     </button>
                   )}
-                  <button className="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600 transition-colors">
+                  <button 
+                    onClick={() => setSelectedComponent(component)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600 transition-colors"
+                  >
                     مشاهده جزئیات
                   </button>
                 </div>
