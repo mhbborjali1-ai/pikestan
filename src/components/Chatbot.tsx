@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, Send, X, Mic, Image, Cpu, CircuitBoard, Zap, Sparkles, Bot, User, Copy, ThumbsUp, ThumbsDown, RotateCcw, Volume2, Code, ExternalLink, Download, Share2, Bookmark, Eye, EyeOff, Hash, Type, Link2, FileText, Palette } from 'lucide-react';
+import { MessageCircle, Send, X, Mic, Image, Cpu, CircuitBoard, Zap, Sparkles, Bot, User, Copy, ThumbsUp, ThumbsDown, RotateCcw, Volume2, Code, ExternalLink, Download, Share2, Bookmark, Eye, EyeOff, Hash, Type, Link2, FileText, Palette, Instagram, MessageSquare } from 'lucide-react';
 import { useChat } from '../contexts/ChatContext';
 
 const Chatbot: React.FC = () => {
@@ -10,7 +10,19 @@ const Chatbot: React.FC = () => {
   const [showMarkdown, setShowMarkdown] = useState<{[key: string]: boolean}>({});
   const [bookmarkedMessages, setBookmarkedMessages] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { messages, addMessage } = useChat();
+  const { messages, addMessage, loadMessages, saveMessages } = useChat();
+
+  // بارگذاری پیام‌ها از کوکی هنگام بارگذاری کامپوننت
+  useEffect(() => {
+    loadMessages();
+  }, []);
+
+  // ذخیره پیام‌ها در کوکی هنگام تغییر
+  useEffect(() => {
+    if (messages.length > 0) {
+      saveMessages();
+    }
+  }, [messages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -109,18 +121,38 @@ const handleSendMessage = async () => {
   };
 
   const shareMessage = async (text: string) => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'پیام از چت‌بات پیکستان',
-          text: text,
-        });
-      } catch (error) {
+    setShowShareModal(text);
+  };
+
+  const [showShareModal, setShowShareModal] = useState<string | null>(null);
+
+  const shareToSocial = (platform: string, text: string) => {
+    const encodedText = encodeURIComponent(`پیام از چت‌بات پیکستان:\n\n${text}\n\nبرای استفاده از چت‌بات: https://chatbot.pikestan.ir/`);
+    
+    let url = '';
+    switch (platform) {
+      case 'telegram':
+        url = `https://t.me/share/url?url=${encodedText}`;
+        break;
+      case 'instagram':
+        // اینستاگرام API مستقیم ندارد، کپی می‌کنیم
         copyToClipboard(text);
-      }
-    } else {
-      copyToClipboard(text);
+        alert('متن کپی شد! می‌توانید در اینستاگرام پیست کنید.');
+        break;
+      case 'eitaa':
+        url = `https://eitaa.com/share/url?url=${encodedText}`;
+        break;
+      case 'rubika':
+        // روبیکا API مستقیم ندارد، کپی می‌کنیم
+        copyToClipboard(text);
+        alert('متن کپی شد! می‌توانید در روبیکا ارسال کنید.');
+        break;
     }
+    
+    if (url) {
+      window.open(url, '_blank');
+    }
+    setShowShareModal(null);
   };
 
   const toggleBookmark = (messageId: string) => {
@@ -374,7 +406,7 @@ const handleSendMessage = async () => {
                           </button>
                           <button
                             onClick={() => shareMessage(msg.text)}
-                            className="text-gray-400 hover:text-orange-500 transition-colors p-1 rounded"
+                            className="text-gray-400 hover:text-blue-500 transition-colors p-1 rounded"
                             title="اشتراک‌گذاری"
                           >
                             <Share2 className="w-3 h-3" />
@@ -507,6 +539,64 @@ const handleSendMessage = async () => {
               </div>
               <span className="opacity-60">Powered by OpenAI ⚡</span>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Share Modal */}
+      {showShareModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-gray-800">اشتراک‌گذاری پیام</h3>
+              <button
+                onClick={() => setShowShareModal(null)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <button
+                onClick={() => shareToSocial('telegram', showShareModal)}
+                className="flex items-center justify-center p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              >
+                <MessageSquare className="w-5 h-5 ml-2" />
+                تلگرام
+              </button>
+              <button
+                onClick={() => shareToSocial('instagram', showShareModal)}
+                className="flex items-center justify-center p-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-colors"
+              >
+                <Instagram className="w-5 h-5 ml-2" />
+                اینستاگرام
+              </button>
+              <button
+                onClick={() => shareToSocial('eitaa', showShareModal)}
+                className="flex items-center justify-center p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+              >
+                <MessageSquare className="w-5 h-5 ml-2" />
+                ایتا
+              </button>
+              <button
+                onClick={() => shareToSocial('rubika', showShareModal)}
+                className="flex items-center justify-center p-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              >
+                <MessageSquare className="w-5 h-5 ml-2" />
+                روبیکا
+              </button>
+            </div>
+            
+            <button
+              onClick={() => {
+                copyToClipboard(showShareModal);
+                setShowShareModal(null);
+              }}
+              className="w-full p-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              کپی متن
+            </button>
           </div>
         </div>
       )}
